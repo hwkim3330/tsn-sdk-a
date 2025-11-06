@@ -368,7 +368,7 @@ if __name__ == "__main__":
     logger.info("Open http://localhost:8000 in your browser")
 
     uvicorn.run(
-        "app_simple:app",
+        "app:app",
         host=args.host,
         port=args.port,
         reload=args.reload
