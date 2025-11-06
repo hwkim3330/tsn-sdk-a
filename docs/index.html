@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TSN Traffic WebUI - Professional network performance testing tool with real-time visualization">
+    <meta name="keywords" content="TSN, network testing, iperf3, sockperf, traffic generation, KETI">
+    <title>TSN Traffic WebUI - Network Performance Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --keti-blue: #0066CC;
+            --keti-blue-light: #3385D6;
+            --keti-blue-dark: #004C99;
+            --bg-white: #FFFFFF;
+            --bg-gray: #F8F9FA;
+            --border-gray: #E9ECEF;
+            --text-dark: #212529;
+            --text-gray: #6C757D;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            background: var(--bg-gray);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--keti-blue) 0%, var(--keti-blue-light) 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .header p {
+            font-size: 20px;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        .header .badges {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--keti-blue);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--keti-blue);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 80px;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: var(--text-gray);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 50px;
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 102, 204, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--keti-blue);
+        }
+
+        .feature-card p {
+            color: var(--text-gray);
+            font-size: 15px;
+        }
+
+        /* Screenshot */
+        .screenshot {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: 40px 0;
+        }
+
+        .screenshot img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .placeholder {
+            background: var(--bg-gray);
+            padding: 100px 20px;
+            text-align: center;
+            border-radius: 8px;
+            color: var(--text-gray);
+            font-size: 18px;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--keti-blue);
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: var(--text-gray);
+        }
+
+        /* Quick Start */
+        .code-block {
+            background: #1E1E1E;
+            color: #D4D4D4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            margin: 20px 0;
+        }
+
+        .code-block code {
+            color: #4FC3F7;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 36px;
+            }
+
+            .header p {
+                font-size: 18px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🌐 TSN Traffic WebUI</h1>
+        <p>Professional network performance testing tool with real-time visualization for Time-Sensitive Networking</p>
+
+        <div class="badges">
+            <span class="badge">✅ Real-time Charts</span>
+            <span class="badge">⚡ 1Gbps+ Throughput</span>
+            <span class="badge">🔧 iperf3 & sockperf</span>
+            <span class="badge">📊 Professional UI</span>
+        </div>
+
+        <div class="cta-buttons">
+            <a href="https://github.com/hwkim3330/tsn-sdk-a" class="btn btn-primary">📦 View on GitHub</a>
+            <a href="#quickstart" class="btn btn-secondary">🚀 Quick Start</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Stats Section -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">940</div>
+                <div class="stat-label">Mbps TCP Throughput</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">&lt;100</div>
+                <div class="stat-label">μs Average Latency</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">1s</div>
+                <div class="stat-label">Real-time Updates</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">5min</div>
+                <div class="stat-label">Setup Time</div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <section class="section">
+            <h2 class="section-title">✨ Key Features</h2>
+            <p class="section-subtitle">Professional network testing tools with real-time monitoring and visualization</p>
+
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Real-time Visualization</h3>
+                    <p>Live charts update every second with bandwidth and latency metrics. Professional Chart.js integration.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Multiple Test Types</h3>
+                    <p>iperf3 (TCP/UDP), sockperf (ping-pong, under-load), and ICMP ping tests available.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Professional UI</h3>
+                    <p>KETI-branded design with horizontal responsive layout. Clean blue accent (#0066CC).</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Unbuffered Output</h3>
+                    <p>stdbuf integration for immediate real-time parsing. No buffering delays.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>WebSocket Communication</h3>
+                    <p>Real-time bidirectional data with asyncio event loop for thread-safe broadcasts.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Responsive Design</h3>
+                    <p>Works on desktop, tablet, and mobile. Horizontal control panel adapts to screen size.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Screenshot Section -->
+        <section class="section">
+            <h2 class="section-title">🖼️ User Interface</h2>
+            <div class="screenshot">
+                <div class="placeholder">
+                    📸 Screenshot: Real-time traffic monitoring with live charts<br>
+                    <small>Bandwidth and latency graphs update every second</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Start Section -->
+        <section class="section" id="quickstart">
+            <h2 class="section-title">🚀 Quick Start</h2>
+            <p class="section-subtitle">Get started in 5 minutes with these simple commands</p>
+
+            <h3 style="margin-top: 40px; margin-bottom: 15px;">1. Clone Repository</h3>
+            <div class="code-block">
+git clone https://github.com/hwkim3330/tsn-sdk-a.git
+cd tsn-sdk-a
+            </div>
+
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">2. Install Dependencies</h3>
+            <div class="code-block">
+sudo apt install python3 python3-pip iperf3 sockperf
+pip3 install fastapi uvicorn websockets
+            </div>
+
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">3. Start Server</h3>
+            <div class="code-block">
+chmod +x start.sh
+./start.sh
+            </div>
+
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">4. Open Browser</h3>
+            <div class="code-block">
+<code>http://localhost:9000</code>
+            </div>
+        </section>
+
+        <!-- Architecture Section -->
+        <section class="section">
+            <h2 class="section-title">🏗️ Architecture</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <h3>Backend (FastAPI)</h3>
+                    <p>
+                        • Python 3.8+ with asyncio<br>
+                        • WebSocket real-time communication<br>
+                        • iperf3/sockperf wrappers<br>
+                        • Thread-safe event broadcasting
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Frontend (Vanilla JS)</h3>
+                    <p>
+                        • Chart.js 4.4.0 for visualization<br>
+                        • WebSocket client<br>
+                        • Responsive CSS Grid layout<br>
+                        • Real-time data updates
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Testing Tools</h3>
+                    <p>
+                        • iperf3 with stdbuf unbuffering<br>
+                        • sockperf for latency testing<br>
+                        • Real-time output parsing<br>
+                        • 1-second interval reporting
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases Section -->
+        <section class="section">
+            <h2 class="section-title">💡 Use Cases</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🔬</div>
+                    <h3>Network Testing</h3>
+                    <p>Measure bandwidth, latency, jitter, and packet loss in real-time.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🏭</div>
+                    <h3>TSN Validation</h3>
+                    <p>Test Time-Sensitive Networking configurations and performance.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Performance Monitoring</h3>
+                    <p>Continuous monitoring with live charts and data export.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <h3>Education</h3>
+                    <p>Teach networking concepts with visual real-time feedback.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🍓</div>
+                    <h3>Raspberry Pi</h3>
+                    <p>Portable network testing on Raspberry Pi 4/5.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Development</h3>
+                    <p>Test network applications during development.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Requirements Section -->
+        <section class="section">
+            <h2 class="section-title">📋 Requirements</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <h3>Operating System</h3>
+                    <p>
+                        • Ubuntu 20.04+<br>
+                        • Debian 11+<br>
+                        • Raspberry Pi OS<br>
+                        • Any modern Linux
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Software</h3>
+                    <p>
+                        • Python 3.8+<br>
+                        • iperf3<br>
+                        • sockperf<br>
+                        • Modern web browser
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Hardware</h3>
+                    <p>
+                        • Any standard NIC<br>
+                        • Raspberry Pi 4/5 (optional)<br>
+                        • 1GB RAM minimum<br>
+                        • Network connectivity
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2024 TSN Traffic WebUI - Korea Electronics Technology Institute (KETI)</p>
+        <div class="footer-links">
+            <a href="https://github.com/hwkim3330/tsn-sdk-a">GitHub</a>
+            <a href="https://github.com/hwkim3330/tsn-sdk-a/issues">Issues</a>
+            <a href="https://github.com/hwkim3330/tsn-sdk-a/blob/main/README.md">Documentation</a>
+            <a href="landing.html">Landing Page</a>
+        </div>
+        <p style="margin-top: 20px; opacity: 0.7;">Made with ❤️ by the TSN Community</p>
+    </div>
+</body>
+</html>
