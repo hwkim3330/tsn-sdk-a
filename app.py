@@ -83,10 +83,10 @@ async def root():
         return html_file.read_text()
     return "<h1>KETI TSN Traffic Tester</h1><p>Index page not found</p>"
 
-@app.get("/tools/webui/app.js")
+@app.get("/app.js")
 async def app_js():
-    """Serve app.js from tools/webui"""
-    js_file = Path(__file__).parent / "tools" / "webui" / "app.js"
+    """Serve app.js from root"""
+    js_file = Path(__file__).parent / "app.js"
     if js_file.exists():
         return HTMLResponse(content=js_file.read_text(), media_type="application/javascript")
     return HTMLResponse(content="// app.js not found", media_type="application/javascript")
