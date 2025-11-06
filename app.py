@@ -242,6 +242,30 @@ async def handle_message(websocket: WebSocket, message: dict):
                 "message": "sockperf test stopped"
             })
 
+        elif msg_type == "start_sockperf_multisize":
+            host = data.get("host", "127.0.0.1")
+            port = int(data.get("port", 11111))
+            duration = int(data.get("duration", 10))
+            msg_sizes = data.get("msg_sizes", [64, 128, 256, 512, 1024, 1500])
+
+            success = sockperf_tool.start_multi_size_test(
+                host=host,
+                port=port,
+                duration=duration,
+                msg_sizes=msg_sizes
+            )
+
+            if success:
+                await broadcast({
+                    "type": "sockperf_multisize_started",
+                    "message": f"sockperf multi-size test started to {host}:{port}"
+                })
+            else:
+                await websocket.send_json({
+                    "type": "error",
+                    "message": "Failed to start multi-size test"
+                })
+
         # Get stats
         elif msg_type == "get_stats":
             await websocket.send_json({

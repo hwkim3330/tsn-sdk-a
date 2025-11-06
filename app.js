@@ -4,6 +4,7 @@
 
 let ws = null;
 let mainChart = null;
+let multiSizeChart = null;
 let currentMode = 'generator';
 let isExpanded = false;
 let isTestRunning = false;
@@ -124,6 +125,34 @@ function handleMessage(message) {
             updateServerDots(data);
             break;
 
+        case 'sockperf_multisize_started':
+            log('Multi-size latency test started', 'success');
+            isTestRunning = true;
+            // Show progress panel and clear table
+            document.getElementById('progress-panel').style.display = 'block';
+            document.getElementById('table-panel').style.display = 'block';
+            document.getElementById('latency-table-body').innerHTML = '';
+            break;
+
+        case 'multi_size_progress':
+            updateMultiSizeProgress(data);
+            break;
+
+        case 'multi_size_result':
+            addLatencyTableRow(data);
+            break;
+
+        case 'multi_size_complete':
+            log('Multi-size test complete', 'success');
+            isTestRunning = false;
+            document.getElementById('progress-panel').style.display = 'none';
+
+            // Update bar chart with all results
+            if (data.results && data.results.length > 0) {
+                updateMultiSizeChart(data.results);
+            }
+            break;
+
         default:
             log(`Event: ${type}`, 'info');
     }
@@ -209,6 +238,9 @@ function updateTestConfig() {
     if (testType === 'iperf-udp') {
         bandwidthGroup.style.display = 'block';
         msgsizeGroup.style.display = 'none';
+    } else if (testType === 'sockperf-multisize') {
+        bandwidthGroup.style.display = 'none';
+        msgsizeGroup.style.display = 'none';
     } else if (testType.startsWith('sockperf')) {
         bandwidthGroup.style.display = 'none';
         msgsizeGroup.style.display = 'block';
@@ -278,6 +310,14 @@ function startTest() {
                 port: 11111,
                 msg_size: msgsize,
                 mps: 10000
+            });
+            break;
+
+        case 'sockperf-multisize':
+            sendMessage('start_sockperf_multisize', {
+                ...messageData,
+                port: 11111,
+                msg_sizes: [64, 128, 256, 512, 1024, 1500]
             });
             break;
 
@@ -495,6 +535,132 @@ function initChart() {
     });
 }
 
+function initMultiSizeChart() {
+    const canvas = document.getElementById('multiSizeChart');
+    if (!canvas) {
+        console.log('Multi-size chart canvas not found');
+        return;
+    }
+
+    const ctx = canvas.getContext('2d');
+
+    multiSizeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Avg Latency (μs)',
+                    data: [],
+                    backgroundColor: 'rgba(51, 133, 214, 0.7)',
+                    borderColor: '#3385D6',
+                    borderWidth: 1
+                },
+                {
+                    label: 'P50 (μs)',
+                    data: [],
+                    backgroundColor: 'rgba(102, 126, 234, 0.7)',
+                    borderColor: '#667eea',
+                    borderWidth: 1
+                },
+                {
+                    label: 'P90 (μs)',
+                    data: [],
+                    backgroundColor: 'rgba(247, 147, 26, 0.7)',
+                    borderColor: '#f7931a',
+                    borderWidth: 1
+                },
+                {
+                    label: 'P99 (μs)',
+                    data: [],
+                    backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                    borderColor: '#dc3545',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Latency (μs)',
+                        color: '#333'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Message Size (bytes)',
+                        color: '#333'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: {
+                        size: 14
+                    },
+                    bodyFont: {
+                        size: 13
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += context.parsed.y.toFixed(2) + ' μs';
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateMultiSizeChart(results) {
+    if (!multiSizeChart || !results || results.length === 0) {
+        return;
+    }
+
+    const labels = results.map(r => r.msg_size + ' B');
+    const avgData = results.map(r => r.latency_avg_us);
+    const p50Data = results.map(r => r.latency_p50_us);
+    const p90Data = results.map(r => r.latency_p90_us);
+    const p99Data = results.map(r => r.latency_p99_us);
+
+    multiSizeChart.data.labels = labels;
+    multiSizeChart.data.datasets[0].data = avgData;
+    multiSizeChart.data.datasets[1].data = p50Data;
+    multiSizeChart.data.datasets[2].data = p90Data;
+    multiSizeChart.data.datasets[3].data = p99Data;
+
+    multiSizeChart.update();
+
+    log(`Multi-size chart updated with ${results.length} data points`, 'info');
+}
+
 function addChartData(type, value) {
     const now = new Date().toLocaleTimeString();
 
@@ -623,12 +789,88 @@ function exportResults() {
 }
 
 // ============================================================================
+// Multi-Size Latency Test Functions
+// ============================================================================
+
+function updateMultiSizeProgress(data) {
+    const progressText = document.getElementById('progress-text');
+    const progressPercent = document.getElementById('progress-percent');
+    const progressBar = document.getElementById('progress-bar');
+
+    if (data.current_size > 0) {
+        progressText.textContent = `Testing: ${data.current_size} bytes (${data.current_index}/${data.total_count})`;
+    } else {
+        progressText.textContent = `Complete (${data.total_count}/${data.total_count})`;
+    }
+
+    progressPercent.textContent = `${Math.round(data.progress)}%`;
+    progressBar.style.width = `${data.progress}%`;
+}
+
+function addLatencyTableRow(data) {
+    const tbody = document.getElementById('latency-table-body');
+    const row = document.createElement('tr');
+
+    row.innerHTML = `
+        <td class="table-size">${data.msg_size} bytes</td>
+        <td class="table-value">${data.latency_avg_us.toFixed(2)}</td>
+        <td class="table-value">${data.latency_min_us.toFixed(2)}</td>
+        <td class="table-value">${data.latency_p50_us.toFixed(2)}</td>
+        <td class="table-value">${data.latency_p90_us.toFixed(2)}</td>
+        <td class="table-value">${data.latency_p99_us.toFixed(2)}</td>
+        <td class="table-value">${data.latency_max_us.toFixed(2)}</td>
+    `;
+
+    tbody.appendChild(row);
+
+    log(`Size ${data.msg_size}: avg=${data.latency_avg_us.toFixed(2)}μs, p50=${data.latency_p50_us.toFixed(2)}μs, p90=${data.latency_p90_us.toFixed(2)}μs, p99=${data.latency_p99_us.toFixed(2)}μs`, 'info');
+}
+
+function exportTable() {
+    const tbody = document.getElementById('latency-table-body');
+    const rows = tbody.getElementsByTagName('tr');
+
+    if (rows.length === 0) {
+        log('No data to export', 'warning');
+        return;
+    }
+
+    // Create CSV content
+    let csvContent = 'Message Size (bytes),Avg Latency (μs),Min (μs),P50 (μs),P90 (μs),P99 (μs),Max (μs)\n';
+
+    for (let row of rows) {
+        const cells = row.getElementsByTagName('td');
+        const rowData = [];
+        for (let cell of cells) {
+            const text = cell.textContent.trim().replace(' bytes', '');
+            rowData.push(text);
+        }
+        csvContent += rowData.join(',') + '\n';
+    }
+
+    // Download CSV
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `keti-latency-table-${timestamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    log('Latency table exported to CSV file', 'success');
+}
+
+// ============================================================================
 // Initialization
 // ============================================================================
 
 window.onload = () => {
     log('KETI TSN Traffic Tester initialized', 'info');
     initChart();
+    initMultiSizeChart();
     connectWebSocket();
     updateTestConfig();
 
