@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KETI TSN Traffic Tester - Professional Time-Sensitive Networking Tool</title>
-    <meta name="description" content="Professional TSN traffic generation and analysis tool with iperf3, sockperf, and real-time visualization">
-    <meta name="keywords" content="TSN, Time-Sensitive Networking, iperf3, sockperf, network testing, KETI, bandwidth, latency">
+    <title>KETI TSN Traffic Tester</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -13,611 +12,543 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --keti-blue: #0066CC;
+            --keti-blue-light: #3385D6;
+            --keti-blue-dark: #004C99;
+            --bg-white: #FFFFFF;
+            --bg-gray: #F8F9FA;
+            --border-gray: #E9ECEF;
+            --text-dark: #212529;
+            --text-gray: #6C757D;
+            --success: #0066CC;
+            --danger: #667eea;
+            --warning: #3385D6;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            overflow-x: hidden;
+            background: var(--bg-gray);
+            color: var(--text-dark);
         }
 
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #0066CC 0%, #004C99 100%);
-            color: white;
-            padding: 120px 20px 100px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
-            opacity: 0.3;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .logo-container {
-            margin-bottom: 30px;
-        }
-
-        .keti-logo {
-            height: 60px;
-            filter: brightness(0) invert(1);
-        }
-
-        .hero h1 {
-            font-size: 56px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .hero .subtitle {
-            font-size: 24px;
-            margin-bottom: 15px;
-            opacity: 0.95;
-            font-weight: 300;
-        }
-
-        .hero .description {
-            font-size: 18px;
-            margin-bottom: 40px;
-            opacity: 0.9;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .cta-buttons {
+        /* Header */
+        .header {
+            background: var(--bg-white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 15px 30px;
             display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 50px;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .btn {
-            display: inline-block;
-            padding: 16px 40px;
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            height: 40px;
+        }
+
+        .logo img {
+            height: 100%;
+            width: auto;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-badge.connected {
+            background: #D4EDDA;
+            color: var(--success);
+        }
+
+        .status-badge.disconnected {
+            background: #F8D7DA;
+            color: var(--danger);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Mode Selector */
+        .mode-selector {
+            background: var(--bg-white);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .mode-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-tab {
+            flex: 1;
+            padding: 12px 24px;
+            background: var(--bg-gray);
+            border: 2px solid var(--border-gray);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .mode-tab.active {
+            background: var(--keti-blue);
+            color: white;
+            border-color: var(--keti-blue);
+        }
+
+        .mode-tab:hover:not(.active) {
+            border-color: var(--keti-blue-light);
+        }
+
+        /* Graph Panel - Full Width at Top */
+        .graph-panel {
+            background: var(--bg-white);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .graph-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            color: var(--keti-blue);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .expand-btn:hover {
+            background: var(--bg-gray);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+        }
+
+        .chart-wrapper.large {
+            height: 600px;
+        }
+
+        /* Control Panel - Horizontal Layout */
+        .control-panel {
+            background: var(--bg-white);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .control-section {
+            min-width: 0; /* Allow grid items to shrink */
+        }
+
+        .panel-title {
             font-size: 18px;
             font-weight: 600;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-
-        .btn-primary {
-            background: white;
-            color: #0066CC;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: white;
-            border-color: white;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateY(-2px);
-        }
-
-        .btn-icon {
-            margin-right: 8px;
-        }
-
-        /* Quick Links */
-        .quick-links {
-            display: flex;
-            gap: 30px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .quick-link {
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-            opacity: 0.9;
-            transition: opacity 0.3s;
-        }
-
-        .quick-link:hover {
-            opacity: 1;
-            text-decoration: underline;
-        }
-
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 80px 20px;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--keti-blue);
         }
 
         .section-title {
-            font-size: 36px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 50px;
-            color: #0066CC;
-        }
-
-        /* Features Grid */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            margin-top: 60px;
-        }
-
-        .feature-card {
-            padding: 40px;
-            background: #F8F9FA;
-            border-radius: 12px;
-            transition: all 0.3s;
-            border-left: 4px solid #0066CC;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        }
-
-        .feature-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-
-        .feature-card h3 {
-            color: #0066CC;
-            margin-bottom: 15px;
-            font-size: 22px;
-            font-weight: 600;
-        }
-
-        .feature-card p {
-            color: #666;
-            font-size: 16px;
-            line-height: 1.6;
-        }
-
-        /* Screenshot Section */
-        .screenshot-section {
-            background: #F8F9FA;
-            padding: 80px 20px;
-        }
-
-        .screenshot-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            padding: 30px;
-            text-align: center;
-        }
-
-        .screenshot-placeholder {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 500px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        /* Quick Start Section */
-        .quick-start {
-            background: white;
-        }
-
-        .code-block {
-            background: #1E1E1E;
-            color: #D4D4D4;
-            padding: 25px;
-            border-radius: 8px;
-            font-family: 'Consolas', 'Monaco', monospace;
             font-size: 14px;
-            overflow-x: auto;
-            margin: 20px 0;
-            border-left: 4px solid #0066CC;
+            font-weight: 600;
+            color: var(--text-gray);
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .code-comment {
-            color: #6A9955;
+        .section-title:first-child {
+            margin-top: 0;
         }
 
-        /* Installation Grid */
-        .install-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
+        .form-group {
+            margin-bottom: 16px;
         }
 
-        .install-card {
-            background: #F8F9FA;
-            padding: 30px;
-            border-radius: 8px;
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-dark);
         }
 
-        .install-card h3 {
-            color: #0066CC;
-            margin-bottom: 15px;
-            font-size: 20px;
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--border-gray);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
         }
 
-        /* Stats Section */
-        .stats-section {
-            background: linear-gradient(135deg, #0066CC 0%, #004C99 100%);
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--keti-blue);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background: var(--keti-blue);
             color: white;
-            padding: 60px 20px;
-            text-align: center;
         }
 
+        .btn-primary:hover {
+            background: var(--keti-blue-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #0055b3;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: var(--bg-gray);
+            color: var(--text-dark);
+            border: 2px solid var(--border-gray);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-gray);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-compact {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        /* Stats Display */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            max-width: 1000px;
-            margin: 0 auto;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
         }
 
-        .stat-item h3 {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 10px;
+        .stat-card {
+            background: var(--bg-gray);
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid var(--keti-blue);
         }
 
-        .stat-item p {
-            font-size: 16px;
-            opacity: 0.9;
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 4px;
         }
 
-        /* Footer */
-        .footer {
-            background: #212529;
-            color: white;
-            padding: 60px 20px 30px;
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--keti-blue);
         }
 
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
+        /* Server Control */
+        .server-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: var(--bg-gray);
+            border-radius: 6px;
+            margin-bottom: 8px;
         }
 
-        .footer-section h4 {
-            color: #0066CC;
-            margin-bottom: 20px;
-            font-size: 18px;
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-gray);
         }
 
-        .footer-link {
-            display: block;
-            color: #ccc;
-            text-decoration: none;
-            margin-bottom: 10px;
-            transition: color 0.3s;
+        .status-dot.running {
+            background: var(--keti-blue);
+            box-shadow: 0 0 8px var(--keti-blue);
         }
 
-        .footer-link:hover {
-            color: #0066CC;
+        .server-name {
+            flex: 1;
+            font-weight: 500;
+            font-size: 14px;
         }
 
-        .footer-bottom {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding-top: 30px;
-            border-top: 1px solid #444;
-            text-align: center;
-            color: #999;
+        .server-port {
+            font-size: 12px;
+            color: var(--text-gray);
         }
 
-        .footer-bottom a {
-            color: #0066CC;
-            text-decoration: none;
+        /* Log Console */
+        .log-panel {
+            background: var(--bg-white);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
+
+        .log-console {
+            background: #1E1E1E;
+            color: #D4D4D4;
+            padding: 16px;
+            border-radius: 6px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            padding: 2px 0;
+        }
+
+        .log-entry.info { color: #4FC3F7; }
+        .log-entry.success { color: #66BB6A; }
+        .log-entry.error { color: #FF8A80; }
+        .log-entry.warning { color: #FFCA28; }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 36px;
+        @media (max-width: 1400px) {
+            .control-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .control-grid {
+                grid-template-columns: 1fr;
             }
 
-            .hero .subtitle {
-                font-size: 20px;
+            .chart-wrapper {
+                height: 300px;
             }
 
-            .hero .description {
-                font-size: 16px;
-            }
-
-            .cta-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                max-width: 300px;
+            .chart-wrapper.large {
+                height: 450px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Hero Section -->
-    <div class="hero">
-        <div class="hero-content">
-            <div class="logo-container">
-                <img src="/assets/keti-logo.png" alt="KETI Logo" class="keti-logo">
+    <!-- Header -->
+    <div class="header">
+        <div class="logo-section">
+            <div class="logo">
+                <img src="assets/keti-logo.png" alt="KETI Logo">
             </div>
-            <h1>TSN Traffic Tester</h1>
-            <p class="subtitle">Professional Time-Sensitive Networking Performance Tool</p>
-            <p class="description">
-                Real-time traffic generation and analysis with iperf3, sockperf, and ping.
-                Featuring live Chart.js visualization, dual-mode operation, and smart 1G+ bandwidth scaling.
-            </p>
-
-            <div class="cta-buttons">
-                <a href="/app.html" class="btn btn-primary">
-                    <span class="btn-icon">🚀</span>Launch Web App
-                </a>
-                <a href="https://github.com/hwkim3330/tsn-sdk-a" class="btn btn-secondary" target="_blank">
-                    <span class="btn-icon">📦</span>View on GitHub
-                </a>
-                <a href="https://github.com/hwkim3330/tsn-sdk-a/archive/refs/heads/master.zip" class="btn btn-secondary">
-                    <span class="btn-icon">⬇️</span>Download ZIP
-                </a>
-            </div>
-
-            <div class="quick-links">
-                <a href="#features" class="quick-link">Features</a>
-                <a href="#quick-start" class="quick-link">Quick Start</a>
-                <a href="#installation" class="quick-link">Installation</a>
-                <a href="https://github.com/hwkim3330/tsn-sdk-a#readme" class="quick-link" target="_blank">Documentation</a>
-                <a href="https://github.com/hwkim3330/tsn-sdk-a/issues" class="quick-link" target="_blank">Issues</a>
-            </div>
+            <div class="title">TSN Traffic Tester</div>
+        </div>
+        <div>
+            <span id="status" class="status-badge disconnected">Disconnected</span>
         </div>
     </div>
 
-    <!-- Stats Section -->
-    <div class="stats-section">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <h3>1G+</h3>
-                <p>Bandwidth Support</p>
-            </div>
-            <div class="stat-item">
-                <h3>3</h3>
-                <p>Test Tools Integrated</p>
-            </div>
-            <div class="stat-item">
-                <h3>5</h3>
-                <p>Test Types</p>
-            </div>
-            <div class="stat-item">
-                <h3>100%</h3>
-                <p>Open Source</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Features Section -->
-    <div class="container" id="features">
-        <h2 class="section-title">✨ Powerful Features</h2>
-        <div class="features">
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3>Real-Time Monitoring</h3>
-                <p>Live Chart.js visualization of bandwidth and latency with automatic graph expansion during tests. Dual-axis charts with smart tooltip formatting.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🔄</div>
-                <h3>Dual Mode Operation</h3>
-                <p>Generator mode for traffic generation and Listener mode for reception. Control both iperf3 and sockperf servers directly from the UI.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Multiple Test Types</h3>
-                <p>iperf3 (TCP/UDP throughput), sockperf (ping-pong, under-load latency), and ICMP ping - all integrated in one professional interface.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">📈</div>
-                <h3>Smart Scaling</h3>
-                <p>Automatic Mbps/Gbps conversion for 1G+ traffic. Chart axes and tooltips adapt dynamically to display appropriate units.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">💾</div>
-                <h3>Data Export</h3>
-                <p>Save test results to JSON format with complete chart history, configuration, and statistics for later analysis.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🎨</div>
-                <h3>KETI Branding</h3>
-                <p>Professional blue accent design (#0066CC) with official KETI logo. Clean, modern interface optimized for TSN testing.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🌐</div>
-                <h3>Network Configuration</h3>
-                <p>Interface selection (enp11s0, enp15s0, eth0, loopback, auto-detect) and remote IP configuration for flexible testing scenarios.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🔌</div>
-                <h3>WebSocket Real-Time</h3>
-                <p>Real-time progress updates via WebSocket connection. Live console logging with color-coded status messages.</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <h3>Responsive Design</h3>
-                <p>Works on desktop and mobile devices. Expandable charts for full-screen visualization during critical tests.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Screenshot Section -->
-    <div class="screenshot-section">
-        <div class="screenshot-container">
-            <h2 class="section-title">Preview</h2>
-            <div class="screenshot-placeholder">
-                📸 KETI TSN Traffic Tester Interface
-                <br>
-                <small style="font-size: 16px; opacity: 0.8;">Professional monitoring and control panel</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Start Section -->
-    <div class="container" id="quick-start">
-        <h2 class="section-title">🚀 Quick Start</h2>
-
-        <h3 style="font-size: 24px; margin-bottom: 20px; color: #333;">One-Line Setup</h3>
-        <div class="code-block">
-<span class="code-comment"># Clone and run</span>
-git clone https://github.com/hwkim3330/tsn-sdk-a.git
-cd tsn-sdk-a
-./start.sh
-        </div>
-
-        <p style="text-align: center; font-size: 18px; margin: 30px 0;">
-            브라우저가 자동으로 열리며 <strong>http://localhost:9000</strong>에서 사용 가능합니다.
-        </p>
-
-        <h3 style="font-size: 24px; margin: 40px 0 20px; color: #333;">Manual Setup</h3>
-        <div class="code-block">
-<span class="code-comment"># 1. Start servers</span>
-iperf3 -s -p 5201 -D
-sockperf server -p 11111 -d &
-
-<span class="code-comment"># 2. Start web UI</span>
-python3 app_simple.py --port 9000
-
-<span class="code-comment"># 3. Open browser</span>
-xdg-open http://localhost:9000
-        </div>
-    </div>
-
-    <!-- Installation Section -->
-    <div class="container" id="installation">
-        <h2 class="section-title">📦 Installation</h2>
-
-        <div class="install-grid">
-            <div class="install-card">
-                <h3>🐧 Ubuntu/Debian</h3>
-                <div class="code-block" style="font-size: 12px;">
-sudo apt update
-sudo apt install -y iperf3 sockperf python3 python3-pip
-pip3 install fastapi uvicorn websockets --break-system-packages
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Mode Selector -->
+        <div class="mode-selector">
+            <div class="mode-tabs">
+                <div class="mode-tab active" onclick="switchMode('generator')">
+                    📤 Generator Mode
+                </div>
+                <div class="mode-tab" onclick="switchMode('listener')">
+                    📥 Listener Mode
                 </div>
             </div>
-
-            <div class="install-card">
-                <h3>🎩 CentOS/RHEL</h3>
-                <div class="code-block" style="font-size: 12px;">
-sudo yum install -y iperf3 python3 python3-pip
-pip3 install fastapi uvicorn websockets
-<span class="code-comment"># sockperf: compile from source</span>
-                </div>
+            <div id="mode-description" style="color: var(--text-gray); font-size: 14px;">
+                Generate traffic and send to remote listener
             </div>
+        </div>
 
-            <div class="install-card">
-                <h3>🍎 macOS</h3>
-                <div class="code-block" style="font-size: 12px;">
-brew install iperf3 python3
-pip3 install fastapi uvicorn websockets
-<span class="code-comment"># sockperf: not officially supported</span>
-                </div>
+        <!-- Graph Panel - Full Width at Top -->
+        <div class="graph-panel" id="graph-panel">
+            <div class="graph-header">
+                <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">Live Performance</h2>
+                <button class="expand-btn" onclick="toggleExpand()">
+                    <span id="expand-text">⛶ Expand</span>
+                </button>
             </div>
+            <div class="chart-wrapper" id="chart-wrapper">
+                <canvas id="mainChart"></canvas>
+            </div>
+        </div>
 
-            <div class="install-card">
-                <h3>🪟 Windows</h3>
-                <div class="code-block" style="font-size: 12px;">
-<span class="code-comment"># Install Python 3.7+ from python.org</span>
-<span class="code-comment"># Download iperf3 from iperf.fr</span>
-pip install fastapi uvicorn websockets
-<span class="code-comment"># sockperf: use WSL</span>
+        <!-- Control Panel - Horizontal Layout -->
+        <div class="control-panel">
+            <h2 class="panel-title">Control Panel</h2>
+            <div class="control-grid">
+                <!-- Server Control -->
+                <div class="control-section">
+                    <div class="section-title">Server Control</div>
+                    <div id="server-controls">
+                        <div class="server-status">
+                            <span class="status-dot" id="iperf-dot"></span>
+                            <span class="server-name">iperf3</span>
+                            <span class="server-port">:5201</span>
+                        </div>
+                        <button class="btn btn-success btn-compact" onclick="startServer('iperf3')">Start iperf3 Server</button>
+                        <button class="btn btn-danger btn-compact" onclick="stopServer('iperf3')">Stop iperf3 Server</button>
+
+                        <div class="server-status" style="margin-top: 16px;">
+                            <span class="status-dot" id="sockperf-dot"></span>
+                            <span class="server-name">sockperf</span>
+                            <span class="server-port">:11111</span>
+                        </div>
+                        <button class="btn btn-success btn-compact" onclick="startServer('sockperf')">Start sockperf Server</button>
+                        <button class="btn btn-danger btn-compact" onclick="stopServer('sockperf')">Stop sockperf Server</button>
+                    </div>
+                </div>
+
+                <!-- Network Configuration -->
+                <div class="control-section">
+                    <div class="section-title">Network Configuration</div>
+                    <div class="form-group">
+                        <label>Remote IP</label>
+                        <input type="text" id="remote-ip" value="192.168.1.3" placeholder="192.168.1.3">
+                    </div>
+                </div>
+
+                <!-- Test Configuration -->
+                <div class="control-section" id="generator-config">
+                    <div class="section-title">Test Configuration</div>
+                    <div class="form-group">
+                        <label>Test Type</label>
+                        <select id="test-type" onchange="updateTestConfig()">
+                            <option value="iperf-tcp">iperf3 - TCP Throughput</option>
+                            <option value="iperf-udp">iperf3 - UDP Throughput</option>
+                            <option value="sockperf-pp">sockperf - Ping-Pong</option>
+                            <option value="sockperf-ul">sockperf - Under Load</option>
+                            <option value="ping">Ping - ICMP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Duration (sec)</label>
+                        <input type="number" id="duration" value="10" min="1" max="3600">
+                    </div>
+                    <div class="form-group" id="bandwidth-group" style="display:none;">
+                        <label>Bandwidth (UDP)</label>
+                        <input type="text" id="bandwidth" value="100M" placeholder="100M, 1G, 10G">
+                    </div>
+                    <div class="form-group" id="msgsize-group" style="display:none;">
+                        <label>Message Size (bytes)</label>
+                        <input type="number" id="msgsize" value="64" min="1" max="65536">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="startTest()">▶ Start Test</button>
+                    <button class="btn btn-danger" onclick="stopTest()">⏹ Stop Test</button>
+                </div>
+
+                <!-- Results -->
+                <div class="control-section">
+                    <div class="section-title">Current Results</div>
+                    <div class="stats-grid" id="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Bandwidth</div>
+                            <div class="stat-value" id="stat-bandwidth">0 Mbps</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Latency</div>
+                            <div class="stat-value" id="stat-latency">0 μs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Jitter</div>
+                            <div class="stat-value" id="stat-jitter">0 ms</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Loss</div>
+                            <div class="stat-value" id="stat-loss">0%</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary" onclick="exportResults()" style="margin-top: 16px;">💾 Export Results</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>Resources</h4>
-                <a href="/app.html" class="footer-link">Launch Web App</a>
-                <a href="https://github.com/hwkim3330/tsn-sdk-a#readme" class="footer-link" target="_blank">Documentation</a>
-                <a href="#quick-start" class="footer-link">Quick Start Guide</a>
-                <a href="#installation" class="footer-link">Installation Guide</a>
+        <!-- Log Console -->
+        <div class="log-panel">
+            <div class="graph-header">
+                <h2 class="panel-title" style="margin: 0; border: none; padding: 0;">Console Log</h2>
+                <button class="btn btn-secondary" onclick="clearLog()" style="width: auto; padding: 8px 16px;">Clear</button>
             </div>
-
-            <div class="footer-section">
-                <h4>GitHub</h4>
-                <a href="https://github.com/hwkim3330/tsn-sdk-a" class="footer-link" target="_blank">Repository</a>
-                <a href="https://github.com/hwkim3330/tsn-sdk-a/issues" class="footer-link" target="_blank">Issues</a>
-                <a href="https://github.com/hwkim3330/tsn-sdk-a/pulls" class="footer-link" target="_blank">Pull Requests</a>
-                <a href="https://github.com/hwkim3330/tsn-sdk-a/archive/refs/heads/master.zip" class="footer-link">Download ZIP</a>
-            </div>
-
-            <div class="footer-section">
-                <h4>Tools</h4>
-                <a href="https://github.com/esnet/iperf" class="footer-link" target="_blank">iperf3</a>
-                <a href="https://github.com/Mellanox/sockperf" class="footer-link" target="_blank">sockperf</a>
-                <a href="https://fastapi.tiangolo.com/" class="footer-link" target="_blank">FastAPI</a>
-                <a href="https://www.chartjs.org/" class="footer-link" target="_blank">Chart.js</a>
-            </div>
-
-            <div class="footer-section">
-                <h4>About</h4>
-                <a href="https://keti.re.kr" class="footer-link" target="_blank">KETI</a>
-                <a href="https://github.com/hwkim3330/tsn-sdk-a/blob/master/LICENSE" class="footer-link" target="_blank">MIT License</a>
-                <a href="https://github.com/hwkim3330" class="footer-link" target="_blank">Author</a>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p><strong>KETI TSN Traffic Tester</strong></p>
-            <p style="margin: 10px 0;">Korea Electronics Technology Institute</p>
-            <p style="margin: 20px 0; opacity: 0.7;">
-                🤖 Generated with <a href="https://claude.com/claude-code" target="_blank">Claude Code</a>
-            </p>
-            <p style="margin-top: 20px; opacity: 0.5; font-size: 14px;">
-                © 2024 KETI. Released under MIT License.
-            </p>
+            <div class="log-console" id="log-console"></div>
         </div>
     </div>
+
+    <script src="tools/webui/app.js"></script>
 </body>
 </html>
