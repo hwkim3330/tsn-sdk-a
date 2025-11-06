@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSN SDK - Time-Sensitive Networking Development Kit</title>
+    <meta name="description" content="Professional Time-Sensitive Networking (TSN) development kit with Basic and Advanced versions for network testing and development">
+    <meta name="keywords" content="TSN, Time-Sensitive Networking, IEEE 802.1, iperf3, sockperf, network testing, KETI">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #FFFFFF;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #0066CC 0%, #3385D6 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 102, 204, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            height: 50px;
+            width: auto;
+        }
+
+        .header-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .header-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .header-links a:hover {
+            opacity: 0.8;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            color: #0066CC;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #0066CC;
+            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.1);
+        }
+
+        /* Version Selection */
+        .versions {
+            max-width: 1200px;
+            margin: -50px auto 60px;
+            padding: 0 20px;
+        }
+
+        .versions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 40px;
+        }
+
+        .version-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid #0066CC;
+        }
+
+        .version-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 102, 204, 0.2);
+        }
+
+        .version-card.advanced {
+            border-top-color: #667eea;
+        }
+
+        .version-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .version-icon {
+            font-size: 2.5rem;
+        }
+
+        .version-title {
+            font-size: 1.8rem;
+            color: #0066CC;
+            font-weight: 700;
+        }
+
+        .version-card.advanced .version-title {
+            color: #667eea;
+        }
+
+        .version-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .version-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .version-features li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .version-features li:before {
+            content: "✓";
+            color: #0066CC;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .version-card.advanced .version-features li:before {
+            color: #667eea;
+        }
+
+        .version-features li:last-child {
+            border-bottom: none;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #0066CC;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: background 0.3s, transform 0.2s;
+            text-align: center;
+            width: 100%;
+        }
+
+        .cta-button:hover {
+            background: #0052a3;
+            transform: scale(1.02);
+        }
+
+        .version-card.advanced .cta-button {
+            background: #667eea;
+        }
+
+        .version-card.advanced .cta-button:hover {
+            background: #5568d3;
+        }
+
+        /* Features Section */
+        .features {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #0066CC;
+            margin-bottom: 50px;
+            font-weight: 700;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-item {
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-item h3 {
+            color: #0066CC;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .feature-item p {
+            color: #666;
+        }
+
+        /* Quick Links */
+        .quick-links {
+            background: linear-gradient(135deg, #0066CC 0%, #3385D6 100%);
+            color: white;
+            padding: 60px 20px;
+            margin-top: 60px;
+        }
+
+        .quick-links-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .quick-links h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .link-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            transition: background 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .link-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .link-card a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .link-card p {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 10px 0;
+        }
+
+        footer a {
+            color: #3385D6;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .versions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="assets/keti-logo.png" alt="KETI Logo" class="logo">
+                <div class="header-title">TSN SDK</div>
+            </div>
+            <div class="header-links">
+                <a href="https://github.com/hwkim3330/tsn-sdk-a" target="_blank">GitHub</a>
+                <a href="https://github.com/hwkim3330/tsn-sdk-a/issues" target="_blank">Issues</a>
+                <a href="README.md">Documentation</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Time-Sensitive Networking SDK</h1>
+            <p>Professional TSN development and testing tools for network engineers and developers</p>
+            <div class="hero-badges">
+                <span class="badge">IEEE 802.1</span>
+                <span class="badge">Raspberry Pi</span>
+                <span class="badge">Open Source</span>
+                <span class="badge">Real-time Testing</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Version Selection -->
+    <section class="versions">
+        <div class="versions-grid">
+            <!-- Basic Version -->
+            <div class="version-card">
+                <div class="version-header">
+                    <div class="version-icon">🍓</div>
+                    <div>
+                        <h2 class="version-title">Basic Version</h2>
+                        <div class="version-subtitle">Web UI Traffic Tester</div>
+                    </div>
+                </div>
+                <ul class="version-features">
+                    <li>Works on any Linux system</li>
+                    <li>Raspberry Pi 4/5 supported</li>
+                    <li>5-minute installation</li>
+                    <li>No special hardware needed</li>
+                    <li>iperf3 & sockperf testing</li>
+                    <li>Real-time web dashboard</li>
+                    <li>Perfect for learning & testing</li>
+                </ul>
+                <a href="tools/webui/index.html" class="cta-button">Launch Web UI →</a>
+            </div>
+
+            <!-- Advanced Version -->
+            <div class="version-card advanced">
+                <div class="version-header">
+                    <div class="version-icon">⚡</div>
+                    <div>
+                        <h2 class="version-title">Advanced Version</h2>
+                        <div class="version-subtitle">TSN SDK Development Kit</div>
+                    </div>
+                </div>
+                <ul class="version-features">
+                    <li>Hardware-accelerated TSN</li>
+                    <li>Sub-10μs latency</li>
+                    <li>IEEE 802.1 features (CBS, TAS, gPTP)</li>
+                    <li>Rust-based performance</li>
+                    <li>FRER support (802.1CB)</li>
+                    <li>Hardware timestamps</li>
+                    <li>Professional development</li>
+                </ul>
+                <a href="README.md" class="cta-button">View Documentation →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2 class="section-title">Key Features</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">📊</div>
+                <h3>Real-time Monitoring</h3>
+                <p>Live bandwidth, latency, and jitter measurements with interactive charts</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🔧</div>
+                <h3>Easy Installation</h3>
+                <p>Automated installer detects your platform and configures everything</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🌐</div>
+                <h3>Network Testing</h3>
+                <p>Comprehensive tools for TCP/UDP throughput and latency testing</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📱</div>
+                <h3>Mobile Responsive</h3>
+                <p>Access your tests from any device with a modern browser</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🔬</div>
+                <h3>RFC Conformance</h3>
+                <p>IEEE 802.1Q and IEC 61850 conformance test frameworks</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">📈</div>
+                <h3>Test Reports</h3>
+                <p>Generate professional reports in HTML, PDF, Excel, and JSON</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Links -->
+    <section class="quick-links">
+        <div class="quick-links-content">
+            <h2>Quick Links</h2>
+            <div class="links-grid">
+                <div class="link-card">
+                    <a href="tools/webui/README.md">📖 Basic Version Docs</a>
+                    <p>Installation and usage guide for Web UI</p>
+                </div>
+                <div class="link-card">
+                    <a href="README.md">📚 Advanced SDK Docs</a>
+                    <p>Complete TSN SDK documentation</p>
+                </div>
+                <div class="link-card">
+                    <a href="https://github.com/hwkim3330/tsn-sdk-a" target="_blank">💻 GitHub Repository</a>
+                    <p>Source code and development</p>
+                </div>
+                <div class="link-card">
+                    <a href="https://github.com/hwkim3330/tsn-sdk-a/issues" target="_blank">🐛 Report Issues</a>
+                    <p>Bug reports and feature requests</p>
+                </div>
+                <div class="link-card">
+                    <a href="tests/conformance/">🧪 Conformance Tests</a>
+                    <p>IEEE 802.1Q and IEC 61850 tests</p>
+                </div>
+                <div class="link-card">
+                    <a href="LICENSE">📜 MIT License</a>
+                    <p>Open source license information</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>TSN SDK</strong> - Time-Sensitive Networking Development Kit</p>
+        <p>Developed by <a href="https://keti.re.kr" target="_blank">KETI (Korea Electronics Technology Institute)</a></p>
+        <p>Licensed under <a href="LICENSE">MIT License</a></p>
+        <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+            Compatible with Raspberry Pi 4, Raspberry Pi 5, and all standard Linux distributions
+        </p>
+    </footer>
+</body>
+</html>
