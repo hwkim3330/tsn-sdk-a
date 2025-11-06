@@ -229,7 +229,6 @@ function startTest() {
     const duration = parseInt(document.getElementById('duration').value);
     const bandwidth = document.getElementById('bandwidth').value;
     const msgsize = parseInt(document.getElementById('msgsize').value);
-    const iface = document.getElementById('interface').value;
 
     // Clear previous data
     chartData.labels = [];
@@ -245,10 +244,6 @@ function startTest() {
         host: remoteIp,
         duration: duration
     };
-
-    if (iface !== 'auto') {
-        messageData.interface = iface;
-    }
 
     // Send appropriate message based on test type
     switch(testType) {
@@ -289,8 +284,7 @@ function startTest() {
         case 'ping':
             sendMessage('start_ping', {
                 host: remoteIp,
-                count: duration * 10,
-                interface: iface !== 'auto' ? iface : undefined
+                count: duration * 10
             });
             break;
     }
@@ -599,7 +593,6 @@ function exportResults() {
         configuration: {
             test_type: document.getElementById('test-type').value,
             remote_ip: document.getElementById('remote-ip').value,
-            interface: document.getElementById('interface').value,
             duration: document.getElementById('duration').value
         },
         results: {

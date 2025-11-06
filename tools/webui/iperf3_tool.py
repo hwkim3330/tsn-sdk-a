@@ -85,10 +85,12 @@ class IPerf3Tool:
             return False
 
         try:
+            # Use stdbuf to disable output buffering for real-time updates
             cmd = [
+                "stdbuf", "-oL",  # Line-buffered output
                 "iperf3", "-c", host, "-p", str(port),
                 "-t", str(duration), "-P", str(parallel),
-                "-J"  # JSON output
+                "-i", "1"  # Report every 1 second
             ]
 
             if udp:
@@ -121,22 +123,14 @@ class IPerf3Tool:
                 bufsize=1
             )
 
-            output_lines = []
-
             # Read output line by line
             for line in self.process.stdout:
-                output_lines.append(line)
-
-                # Try to parse progress (non-JSON lines)
-                if "sec" in line and "Bytes" in line:
+                # Try to parse progress lines
+                if "sec" in line and ("Bytes" in line or "bits/sec" in line):
                     self._parse_progress_line(line)
 
             # Wait for completion
             self.process.wait()
-
-            # Parse final JSON output
-            full_output = ''.join(output_lines)
-            self._parse_json_output(full_output)
 
             self._notify("test_complete", self.stats)
 
@@ -151,24 +145,28 @@ class IPerf3Tool:
         """Parse iperf3 progress line"""
         try:
             # Example: [  5]   0.00-1.00   sec  12.5 MBytes   105 Mbits/sec
-            match = re.search(r'(\d+\.?\d*)\s+([KMG]?Bits/sec)', line)
+            # Look for pattern: number followed by bits/sec
+            match = re.search(r'(\d+\.?\d*)\s+([KMG]?bits/sec)', line, re.IGNORECASE)
             if match:
                 value = float(match.group(1))
-                unit = match.group(2)
+                unit = match.group(2).lower()
 
                 # Convert to Mbps
-                if 'Gbits' in unit:
+                if 'gbits' in unit:
                     bandwidth_mbps = value * 1000
-                elif 'Kbits' in unit:
+                elif 'kbits' in unit:
                     bandwidth_mbps = value / 1000
                 else:
                     bandwidth_mbps = value
 
                 self.stats["bandwidth_mbps"] = bandwidth_mbps
+                logger.info(f"Progress: {bandwidth_mbps:.2f} Mbps")
                 self._notify("progress", {"bandwidth_mbps": bandwidth_mbps})
+            else:
+                logger.debug(f"No match in line: {line.strip()}")
 
         except Exception as e:
-            logger.debug(f"Failed to parse progress line: {e}")
+            logger.error(f"Failed to parse progress line: {e}, line: {line}")
 
     def _parse_json_output(self, output: str):
         """Parse iperf3 JSON output"""

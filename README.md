@@ -142,15 +142,16 @@ tsn-sdk/
 ├── config.yaml                 # SDK configuration
 ├── dist/                       # Distribution files
 │
+├── index.html                  # **Main Web UI Application**
+├── app.js                      # Client JavaScript (real-time charts)
+├── app.py                      # FastAPI backend with WebSocket
+├── start.sh                    # Quick start script
+├── assets/                     # UI assets (KETI logo, etc.)
+│
 ├── tools/                      # Additional tools
-│   └── webui/                  # **NEW: Web-based Traffic Tester**
-│       ├── index.html          # Landing page
-│       ├── app.html            # Main application UI
-│       ├── app.js              # Client JavaScript
-│       ├── app.py              # FastAPI backend
-│       ├── iperf3_tool.py      # iperf3 wrapper
+│   └── webui/                  # Web UI backend modules
+│       ├── iperf3_tool.py      # iperf3 wrapper with real-time parsing
 │       ├── sockperf_tool.py    # sockperf wrapper
-│       ├── start.sh            # Quick start script
 │       └── README.md           # Web UI documentation
 │
 └── tests/                      # **NEW: Conformance Testing**
@@ -211,9 +212,11 @@ Professional web-based traffic generation and monitoring interface.
 **Features:**
 - **Dual Mode**: Generator and Listener modes
 - **Multiple Test Types**: iperf3 (TCP/UDP), sockperf (ping-pong, under-load), ICMP ping
-- **Real-time Visualization**: Live charts with 1G+ bandwidth support
-- **Professional UI**: KETI-branded blue accent design
-- **WebSocket Communication**: Real-time bidirectional data
+- **Real-time Visualization**: Live charts with 1-second interval updates
+- **Professional UI**: KETI-branded blue accent design (#0066CC)
+- **WebSocket Communication**: Real-time bidirectional data with asyncio event loop
+- **Horizontal Layout**: Responsive control panel with 4 sections
+- **Unbuffered Output**: `stdbuf` integration for real-time iperf3 parsing
 - **Data Export**: JSON/CSV export
 - **Systemd Integration**: Auto-start on boot
 

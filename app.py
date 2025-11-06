@@ -34,6 +34,13 @@ assets_dir = Path(__file__).parent / "assets"
 if assets_dir.exists():
     app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
+@app.on_event("startup")
+async def startup_event():
+    """Store event loop on startup"""
+    global main_loop
+    main_loop = asyncio.get_running_loop()
+    logger.info("Event loop stored for callbacks")
+
 # Mount tools/webui for app.js and other resources
 webui_dir = Path(__file__).parent / "tools" / "webui"
 if webui_dir.exists():
@@ -60,12 +67,19 @@ async def broadcast(message: dict):
         except:
             pass
 
+# Store the event loop reference
+main_loop = None
+
 def tool_callback(event: str, data: dict):
     """Callback from tools - convert to async broadcast"""
-    asyncio.create_task(broadcast({
-        "type": event,
-        "data": data
-    }))
+    if main_loop is not None:
+        asyncio.run_coroutine_threadsafe(
+            broadcast({
+                "type": event,
+                "data": data
+            }),
+            main_loop
+        )
 
 # Set callbacks
 iperf_tool.set_callback(tool_callback)
@@ -370,7 +384,7 @@ if __name__ == "__main__":
     logger.info("Open http://localhost:9000 in your browser")
 
     uvicorn.run(
-        "app:app",
+        app,
         host=args.host,
         port=args.port,
         reload=args.reload
