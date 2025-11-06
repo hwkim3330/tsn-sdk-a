@@ -14,24 +14,28 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: #FFFFFF;
+            color: #1d1d1f;
+            background: #fbfbfd;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Header */
+        /* Header - Apple Style */
         header {
-            background: linear-gradient(135deg, #0066CC 0%, #3385D6 100%);
-            color: white;
-            padding: 20px 0;
-            box-shadow: 0 2px 10px rgba(0, 102, 204, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .header-content {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 16px 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -40,241 +44,238 @@
         .logo-section {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .logo {
-            height: 50px;
+            height: 40px;
             width: auto;
         }
 
         .header-title {
-            font-size: 1.8rem;
+            font-size: 1.3rem;
             font-weight: 600;
+            color: #1d1d1f;
+            letter-spacing: -0.02em;
         }
 
         .header-links {
             display: flex;
-            gap: 20px;
+            gap: 32px;
+            align-items: center;
         }
 
         .header-links a {
-            color: white;
+            color: #1d1d1f;
             text-decoration: none;
-            font-weight: 500;
-            transition: opacity 0.3s;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: opacity 0.2s;
         }
 
         .header-links a:hover {
-            opacity: 0.8;
+            opacity: 0.6;
         }
 
-        /* Hero Section */
+        /* Hero Section - Apple Style */
         .hero {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 80px 20px;
+            padding: 100px 40px 80px;
             text-align: center;
+            background: linear-gradient(180deg, #fbfbfd 0%, #ffffff 100%);
         }
 
         .hero-content {
-            max-width: 800px;
+            max-width: 980px;
             margin: 0 auto;
         }
 
         .hero h1 {
-            font-size: 3rem;
-            color: #0066CC;
-            margin-bottom: 20px;
+            font-size: 4rem;
             font-weight: 700;
+            color: #1d1d1f;
+            margin-bottom: 16px;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
         }
 
-        .hero p {
-            font-size: 1.3rem;
-            color: #555;
-            margin-bottom: 30px;
+        .hero-subtitle {
+            font-size: 1.75rem;
+            color: #6e6e73;
+            margin-bottom: 24px;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: #86868b;
+            max-width: 700px;
+            margin: 0 auto 40px;
         }
 
         .hero-badges {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
             flex-wrap: wrap;
-            margin-bottom: 30px;
+            margin-bottom: 48px;
         }
 
         .badge {
-            background: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            background: #f5f5f7;
+            padding: 6px 14px;
+            border-radius: 18px;
+            font-size: 0.85rem;
             font-weight: 500;
-            color: #0066CC;
-            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.1);
+            color: #1d1d1f;
         }
 
-        /* Version Selection */
+        /* Version Selection - Apple Style */
         .versions {
             max-width: 1200px;
-            margin: -50px auto 60px;
-            padding: 0 20px;
+            margin: 0 auto 100px;
+            padding: 0 40px;
         }
 
         .versions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-            gap: 40px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
         }
 
         .version-card {
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-top: 5px solid #0066CC;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 48px 40px;
+            box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.04);
         }
 
         .version-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 50px rgba(0, 102, 204, 0.2);
-        }
-
-        .version-card.advanced {
-            border-top-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 2px 8px 24px rgba(0, 0, 0, 0.12);
         }
 
         .version-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .version-icon {
-            font-size: 2.5rem;
+            font-size: 3.5rem;
+            margin-bottom: 16px;
         }
 
         .version-title {
-            font-size: 1.8rem;
-            color: #0066CC;
+            font-size: 2rem;
+            color: #1d1d1f;
             font-weight: 700;
-        }
-
-        .version-card.advanced .version-title {
-            color: #667eea;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
         }
 
         .version-subtitle {
-            font-size: 1.1rem;
-            color: #666;
-            margin-bottom: 25px;
+            font-size: 1rem;
+            color: #6e6e73;
+            font-weight: 400;
         }
 
         .version-features {
             list-style: none;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
 
         .version-features li {
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-            color: #555;
+            padding: 14px 0;
+            color: #1d1d1f;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.95rem;
         }
 
         .version-features li:before {
             content: "✓";
             color: #0066CC;
             font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        .version-card.advanced .version-features li:before {
-            color: #667eea;
-        }
-
-        .version-features li:last-child {
-            border-bottom: none;
+            font-size: 1.1rem;
+            margin-top: 2px;
         }
 
         .cta-button {
             display: inline-block;
             background: #0066CC;
             color: white;
-            padding: 15px 40px;
-            border-radius: 8px;
+            padding: 14px 28px;
+            border-radius: 980px;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: background 0.3s, transform 0.2s;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.2s;
             text-align: center;
             width: 100%;
         }
 
         .cta-button:hover {
-            background: #0052a3;
-            transform: scale(1.02);
+            background: #0055b3;
+            transform: scale(1.01);
         }
 
-        .version-card.advanced .cta-button {
-            background: #667eea;
+        .cta-button:active {
+            transform: scale(0.98);
         }
 
-        .version-card.advanced .cta-button:hover {
-            background: #5568d3;
-        }
-
-        /* Features Section */
+        /* Features Section - Apple Style */
         .features {
             max-width: 1200px;
-            margin: 60px auto;
-            padding: 0 20px;
+            margin: 100px auto;
+            padding: 0 40px;
         }
 
         .section-title {
             text-align: center;
-            font-size: 2.5rem;
-            color: #0066CC;
-            margin-bottom: 50px;
+            font-size: 3rem;
+            color: #1d1d1f;
+            margin-bottom: 64px;
             font-weight: 700;
+            letter-spacing: -0.02em;
         }
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
         }
 
         .feature-item {
-            padding: 30px;
-            background: #f8f9fa;
-            border-radius: 8px;
             text-align: center;
+            padding: 24px;
         }
 
         .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
+            font-size: 3.5rem;
+            margin-bottom: 16px;
         }
 
         .feature-item h3 {
-            color: #0066CC;
-            margin-bottom: 10px;
+            color: #1d1d1f;
+            margin-bottom: 12px;
             font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
         }
 
         .feature-item p {
-            color: #666;
+            color: #6e6e73;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
 
-        /* Quick Links */
+        /* Quick Links - Apple Style */
         .quick-links {
-            background: linear-gradient(135deg, #0066CC 0%, #3385D6 100%);
-            color: white;
-            padding: 60px 20px;
-            margin-top: 60px;
+            background: #f5f5f7;
+            padding: 80px 40px;
+            margin-top: 100px;
         }
 
         .quick-links-content {
@@ -284,57 +285,61 @@
 
         .quick-links h2 {
             text-align: center;
-            font-size: 2rem;
-            margin-bottom: 40px;
+            font-size: 2.5rem;
+            margin-bottom: 48px;
             font-weight: 700;
+            color: #1d1d1f;
+            letter-spacing: -0.02em;
         }
 
         .links-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
 
         .link-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 8px;
+            background: #ffffff;
+            padding: 28px 24px;
+            border-radius: 12px;
             text-align: center;
-            transition: background 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .link-card:hover {
-            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         }
 
         .link-card a {
-            color: white;
+            color: #0066CC;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .link-card p {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            opacity: 0.9;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #6e6e73;
         }
 
-        /* Footer */
+        /* Footer - Apple Style */
         footer {
-            background: #1a1a1a;
-            color: white;
-            padding: 40px 20px;
+            background: #f5f5f7;
+            padding: 40px 40px 60px;
             text-align: center;
         }
 
         footer p {
-            margin: 10px 0;
+            margin: 8px 0;
+            color: #6e6e73;
+            font-size: 0.85rem;
         }
 
         footer a {
-            color: #3385D6;
+            color: #0066CC;
             text-decoration: none;
         }
 
@@ -343,27 +348,59 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
+        @media (max-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .hero p {
-                font-size: 1.1rem;
+            .links-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.3rem;
             }
 
             .versions-grid {
                 grid-template-columns: 1fr;
             }
 
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+
             .header-content {
                 flex-direction: column;
-                gap: 15px;
+                gap: 16px;
+                padding: 16px 20px;
             }
 
             .header-links {
-                flex-wrap: wrap;
-                justify-content: center;
+                gap: 20px;
+            }
+
+            .hero {
+                padding: 60px 20px 40px;
+            }
+
+            .versions,
+            .features,
+            .quick-links-content {
+                padding: 0 20px;
+            }
+
+            .section-title {
+                font-size: 2rem;
             }
         }
     </style>
@@ -373,27 +410,30 @@
     <header>
         <div class="header-content">
             <div class="logo-section">
-                <img src="assets/keti-logo.png" alt="KETI Logo" class="logo">
+                <img src="assets/keti-logo.png" alt="KETI" class="logo">
                 <div class="header-title">TSN SDK</div>
             </div>
-            <div class="header-links">
+            <nav class="header-links">
+                <a href="tools/webui/index.html">Web UI</a>
+                <a href="README.md">Docs</a>
                 <a href="https://github.com/hwkim3330/tsn-sdk-a" target="_blank">GitHub</a>
-                <a href="https://github.com/hwkim3330/tsn-sdk-a/issues" target="_blank">Issues</a>
-                <a href="README.md">Documentation</a>
-            </div>
+            </nav>
         </div>
     </header>
 
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Time-Sensitive Networking SDK</h1>
-            <p>Professional TSN development and testing tools for network engineers and developers</p>
+            <h1>TSN SDK</h1>
+            <p class="hero-subtitle">Time-Sensitive Networking Development Kit</p>
+            <p class="hero-description">
+                Professional network testing and TSN development tools for engineers and developers
+            </p>
             <div class="hero-badges">
                 <span class="badge">IEEE 802.1</span>
                 <span class="badge">Raspberry Pi</span>
                 <span class="badge">Open Source</span>
-                <span class="badge">Real-time Testing</span>
+                <span class="badge">Real-time</span>
             </div>
         </div>
     </section>
@@ -405,10 +445,8 @@
             <div class="version-card">
                 <div class="version-header">
                     <div class="version-icon">🍓</div>
-                    <div>
-                        <h2 class="version-title">Basic Version</h2>
-                        <div class="version-subtitle">Web UI Traffic Tester</div>
-                    </div>
+                    <h2 class="version-title">Basic</h2>
+                    <p class="version-subtitle">Web UI Traffic Tester</p>
                 </div>
                 <ul class="version-features">
                     <li>Works on any Linux system</li>
@@ -419,35 +457,33 @@
                     <li>Real-time web dashboard</li>
                     <li>Perfect for learning & testing</li>
                 </ul>
-                <a href="tools/webui/index.html" class="cta-button">Launch Web UI →</a>
+                <a href="tools/webui/index.html" class="cta-button">Launch Web UI</a>
             </div>
 
             <!-- Advanced Version -->
-            <div class="version-card advanced">
+            <div class="version-card">
                 <div class="version-header">
                     <div class="version-icon">⚡</div>
-                    <div>
-                        <h2 class="version-title">Advanced Version</h2>
-                        <div class="version-subtitle">TSN SDK Development Kit</div>
-                    </div>
+                    <h2 class="version-title">Advanced</h2>
+                    <p class="version-subtitle">TSN SDK Development Kit</p>
                 </div>
                 <ul class="version-features">
                     <li>Hardware-accelerated TSN</li>
                     <li>Sub-10μs latency</li>
-                    <li>IEEE 802.1 features (CBS, TAS, gPTP)</li>
+                    <li>IEEE 802.1 features (CBS, TAS)</li>
                     <li>Rust-based performance</li>
                     <li>FRER support (802.1CB)</li>
                     <li>Hardware timestamps</li>
                     <li>Professional development</li>
                 </ul>
-                <a href="README.md" class="cta-button">View Documentation →</a>
+                <a href="README.md" class="cta-button">View Documentation</a>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
     <section class="features">
-        <h2 class="section-title">Key Features</h2>
+        <h2 class="section-title">What You Can Do</h2>
         <div class="features-grid">
             <div class="feature-item">
                 <div class="feature-icon">📊</div>
@@ -485,31 +521,31 @@
     <!-- Quick Links -->
     <section class="quick-links">
         <div class="quick-links-content">
-            <h2>Quick Links</h2>
+            <h2>Get Started</h2>
             <div class="links-grid">
                 <div class="link-card">
-                    <a href="tools/webui/README.md">📖 Basic Version Docs</a>
-                    <p>Installation and usage guide for Web UI</p>
+                    <a href="tools/webui/README.md">📖 Basic Guide</a>
+                    <p>Installation and usage for Web UI</p>
                 </div>
                 <div class="link-card">
-                    <a href="README.md">📚 Advanced SDK Docs</a>
+                    <a href="README.md">📚 Advanced Docs</a>
                     <p>Complete TSN SDK documentation</p>
                 </div>
                 <div class="link-card">
-                    <a href="https://github.com/hwkim3330/tsn-sdk-a" target="_blank">💻 GitHub Repository</a>
+                    <a href="https://github.com/hwkim3330/tsn-sdk-a" target="_blank">💻 GitHub</a>
                     <p>Source code and development</p>
                 </div>
                 <div class="link-card">
-                    <a href="https://github.com/hwkim3330/tsn-sdk-a/issues" target="_blank">🐛 Report Issues</a>
+                    <a href="https://github.com/hwkim3330/tsn-sdk-a/issues" target="_blank">🐛 Issues</a>
                     <p>Bug reports and feature requests</p>
                 </div>
                 <div class="link-card">
-                    <a href="tests/conformance/">🧪 Conformance Tests</a>
+                    <a href="tests/conformance/">🧪 Tests</a>
                     <p>IEEE 802.1Q and IEC 61850 tests</p>
                 </div>
                 <div class="link-card">
-                    <a href="LICENSE">📜 MIT License</a>
-                    <p>Open source license information</p>
+                    <a href="LICENSE">📜 License</a>
+                    <p>Open source MIT license</p>
                 </div>
             </div>
         </div>
@@ -520,7 +556,7 @@
         <p><strong>TSN SDK</strong> - Time-Sensitive Networking Development Kit</p>
         <p>Developed by <a href="https://keti.re.kr" target="_blank">KETI (Korea Electronics Technology Institute)</a></p>
         <p>Licensed under <a href="LICENSE">MIT License</a></p>
-        <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+        <p style="margin-top: 20px; opacity: 0.7;">
             Compatible with Raspberry Pi 4, Raspberry Pi 5, and all standard Linux distributions
         </p>
     </footer>
